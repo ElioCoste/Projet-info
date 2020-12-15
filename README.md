@@ -12,6 +12,7 @@ On utilise la **notation algébrique complète** pour les coups. Il faut spécif
 
 ## Représentation du plateau
 On utilise la **notation FEN** pour le plateau, c'est à dire les majuscules pour les pièces noires et les minuscules pour les pièces blanches.
+
 Les lettres représentant chaque pièce sont : 
 * R : Tour (Rook)
 * N : Cavalier (Knight)
@@ -19,6 +20,7 @@ Les lettres représentant chaque pièce sont :
 * Q : Dame (Queen)
 * K : Roi (King)
 * P : Pion (Pawn)
+
 L'échiquier est représenté sous la perspective des blancs, il faut dont changer l'affichage à chque tour. 
 
 ## Modélisation des coups
