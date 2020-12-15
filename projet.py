@@ -17,23 +17,19 @@ def convertit_coup(coup):
 def coup_valide(plateau, coup):
     """Retourne True si le coup demandé est valide, False sinon."""
     est_valide = True
-    
-    # Vérifie si le coup est légal
-
     return est_valide
 
 def jouer_coup(plateau, coup):
     """Joue le coup demandé sur l'échiquier."""
-
-    # Joue le coup
-
     return plateau
 
 def afficher_plateau(plateau, trait):
     """Affiche l'échiquier sous la perspective de la couleur qui a le trait."""
     # Si c'est aux Noirs de jouer, on renverse l'échiquier
-    if not trait:
+    if trait:
         pass
+    
+    # Affichage de l'échiquier
     for i in plateau:
         for j in i:
             print(j, end='')
@@ -52,13 +48,17 @@ def demo():
         ['.', '.', '.', '.', '.', '.', '.', '.'], 
         ['.', '.', '.', '.', '.', '.', '.', '.'], 
         ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'], 
-        ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r']]
+        ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r']
+    ]
 
     trait = 0
     running = True
     while running:
         trait = 0 if trait == 1 else 1
-        coup = convertit_coup(demander_entree("Trait aux {} : ".format(trait), coup_valide))
+        couleur = "Noirs" if trait else "Blancs"
+        coup = ((0, 0), (0, 0))
+        while not coup_valide(plateau, coup):
+            coup = convertit_coup(input("Trait aux {}".format(couleur)))
         jouer_coup(plateau, coup)
 
 
