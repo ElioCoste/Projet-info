@@ -24,7 +24,10 @@ Les lettres représentant chaque pièce sont :
 L'échiquier est représenté sous la perspective des blancs, il faut dont changer l'affichage à chque tour. 
 
 ## Modélisation des coups
-Un coup en notation algébrique devra être converti en un couple de deux couples de coordonnées.
-Par exemple : e2e4 donne ((, 0), (0, 0))
+Un coup en notation algébrique devra être converti en un couple de deux couples de coordonnées. Le premier couple représente la case de départ et le second la case d'arrivée.
+
+Le format doit donc être : `((ligne_depart, colonne_depart), (ligne_arrivee, colonne_arrivee))`.
+
+Par exemple : e2e4 donne `((6, 4), (4, 4))`
 
 
