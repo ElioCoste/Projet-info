@@ -13,7 +13,7 @@ On utilise la **notation algébrique complète** pour les coups. Il faut spécif
 ## Représentation du plateau
 On utilise la **notation FEN** pour le plateau, c'est à dire les majuscules pour les pièces noires et les minuscules pour les pièces blanches.
 
-Les lettres représentant chaque pièce sont : 
+Les lettres représentant chaque pièce sont :
 * R : Tour (Rook)
 * N : Cavalier (Knight)
 * B : Fou (Bishop)
@@ -21,12 +21,12 @@ Les lettres représentant chaque pièce sont :
 * K : Roi (King)
 * P : Pion (Pawn)
 
-L'échiquier est représenté sous la perspective des blancs, il faut dont changer l'affichage à chque tour. 
+L'échiquier est représenté sous la perspective des blancs, il faut dont changer l'affichage à chaque tour.
 
 ## Modélisation des coups
 Un coup en notation algébrique devra être converti en un couple de deux couples de coordonnées. Le premier couple représente la case de départ et le second la case d'arrivée.
 
-Le format doit donc être : `((ligne_depart, colonne_depart), (ligne_arrivee, colonne_arrivee))`.
+Le format doit donc être de la forme : `((ligne_depart, colonne_depart), (ligne_arrivee, colonne_arrivee))`.
 
 Par exemple : e2e4 donne `((6, 4), (4, 4))`
 
