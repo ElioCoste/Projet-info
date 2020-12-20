@@ -89,6 +89,8 @@ def cavalier(plateau, pos):
 
 def fou(plateau, pos):
     """Renvoie la liste des déplacements possibles pour un fou."""
+    a, b = pos
+    deplacements = [(a + 1, b + 1), (a + 2, b + 2), (a + 3, b + 3), (a + 4, b + 4), (a + 5, b + 5), (a + 6, b + 6), (a + 7, b + 7)]
     return deplacements
 
 def roi(plateau, pos):
