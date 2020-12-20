@@ -50,7 +50,7 @@ def afficher_plateau(plateau, trait):
     """Affiche l'échiquier sous la perspective de la couleur qui a le trait."""
     # Si c'est aux Noirs de jouer, on renverse l'échiquier
     if trait:
-        pass
+        plateau = [i[::-1] for i in plateau][::-1]
     
     # Affichage de l'échiquier
     for i in plateau:
@@ -71,6 +71,7 @@ def tour(plateau, pos):
 
 def cavalier(plateau, pos):
     """Renvoie la liste des déplacements possibles pour un cavalier."""
+
     return deplacements
 
 def fou(plateau, pos):
