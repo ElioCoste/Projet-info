@@ -59,6 +59,18 @@ def pion(plateau, pos):
 
 def tour(plateau, pos):
     """Renvoie la liste des déplacements possibles pour une tour."""
+    deplacements = []
+    ligne, colonne = pos
+    liste_colonne = [0, 1, 2, 3, 4, 5, 6, 7]
+    liste_ligne = [0, 1, 2, 3, 4, 5, 6, 7]
+    for i in range(len(liste_ligne)):
+        for j in range(len(liste_colonne)):
+            if liste_ligne[i] == ligne:
+                deplacements += [(ligne, j)]
+    for j in range(len(liste_colonne)):
+        for i in range(len(liste_ligne)):
+            if liste_colonne[j] == colonne:
+                deplacements += [(i, colonne)]
     return deplacements
 
 def cavalier(plateau, pos):
