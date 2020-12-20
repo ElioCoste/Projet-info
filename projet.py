@@ -7,9 +7,6 @@
 """Ce projet consiste en une implémentation simpliste d'un jeu d'échecs, avec \
 seulement quelques fonctionnalités."""
 
-piece = {"k": '♔', "q": '♕', "r": '♖', "b": '♗', "k": '♘', "p": '♙', "K": '♚', "Q": '♛', "R": '♜', "B": '♝', "N": '♞', "P": '♟'}
-
-
 import random
 
 
@@ -30,7 +27,7 @@ def coup_valide(plateau, coup):
         return False
 
     # Vérifie que la case d'arrivée est atteignable par la pièce
-    return DEPLACEMENTS[plateau[coup[0][0]][coup[0][1]]()
+    return coup[1] in DEPLACEMENTS[plateau[coup[0][0]][coup[0][1]]](plateau, coup[0])
 
 def jouer_coup(plateau, coup):
     """Joue le coup demandé sur l'échiquier."""
@@ -47,7 +44,59 @@ def afficher_plateau(plateau, trait):
         for j in i:
             print(PIECES[j], end='')
         print()
-    
+
+
+## Fonctions pour les déplacements possibles des pièces. 
+
+def pion(plateau, pos):
+    """Renvoie la liste des déplacements possibles pour un pion."""
+    return deplacements
+
+def tour(plateau, pos):
+    """Renvoie la liste des déplacements possibles pour une tour."""
+    return deplacements
+
+def cavalier(plateau, pos):
+    """Renvoie la liste des déplacements possibles pour un cavalier."""
+    return deplacements
+
+def fou(plateau, pos):
+    """Renvoie la liste des déplacements possibles pour un fou."""
+    return deplacements
+
+def roi(plateau, pos):
+    """Renvoie la liste des déplacements possibles pour un roi."""
+    return deplacements
+
+def dame(plateau, pos):
+    """Renvoie la liste des déplacements possibles pour une dame."""
+    return fou(plateau, pos) + tour(plateau, pos)
+
+# Dictionnaire de conversion caractères spéciaux
+PIECES = {
+    "k": '♔', 
+    "q": '♕', 
+    "r": '♖', 
+    "b": '♗', 
+    "n": '♘', 
+    "p": '♙', 
+    "K": '♚', 
+    "Q": '♛', 
+    "R": '♜', 
+    "B": '♝', 
+    "N": '♞', 
+    "P": '♟'
+}
+
+DEPLACEMENTS = {
+    'p': pion,
+    "k": roi, 
+    "q": dame, 
+    "r": tour, 
+    "b": fou, 
+    "n": cavalier
+}
+
 
 def demo():
     input("Appuyez sur ENTREE pour commencer une nouvelle partie.")
@@ -74,8 +123,4 @@ def demo():
         while not coup_valide(plateau, coup):
             coup = convertit_coup(input("Trait aux {}".format(couleur)))
 
-        jouer_coup(plateau, coup)
-
-
-if __name__ == "__main__":
-    demo()
+        plateau = jouer_coup(plateau, coup)
