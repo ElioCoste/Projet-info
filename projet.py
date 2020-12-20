@@ -32,9 +32,7 @@ def coup_valide(plateau, coup):
 
 def jouer_coup(plateau, coup):
     """Joue le coup demandé sur l'échiquier."""
-    case_depart , case_arrivee = coup 
-    ligne_depart, colonne_depart = case_depart
-    ligne_arrivee, colonne_arrivee = case_arrivee
+    (ligne_depart, colonne_depart), (ligne_arrivee, colonne_arrivee) = coup
     plateau[ligne_arrivee][colonne_arrivee] = plateau[ligne_depart][colonne_depart]
     plateau[ligne_depart][colonne_depart] = '.'
     return plateau
