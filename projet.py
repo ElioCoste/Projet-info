@@ -7,6 +7,9 @@
 """Ce projet consiste en une implémentation simpliste d'un jeu d'échecs, avec \
 seulement quelques fonctionnalités."""
 
+piece = {"k": '♔', "q": '♕', "r": '♖', "b": '♗', "k": '♘', "p": '♙', "K": '♚', "Q": '♛', "R": '♜', "B": '♝', "N": '♞', "P": '♟'}
+
+
 import random
 
 def convertit_coup(coup):
