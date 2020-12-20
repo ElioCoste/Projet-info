@@ -83,7 +83,8 @@ def tour(plateau, pos):
 
 def cavalier(plateau, pos):
     """Renvoie la liste des déplacements possibles pour un cavalier."""
-
+    a, b = pos
+    deplacements =[(a + 2, b + 1), (a + 2, b - 1), (a - 2, b + 1), (a - 2, b - 1), (a + 1, b + 2), (a - 1, b + 2), (a + 1, b - 2), (a - 1,  b - 2)]
     return deplacements
 
 def fou(plateau, pos):
