@@ -7,7 +7,6 @@
 """Ce projet consiste en une implémentation simpliste d'un jeu d'échecs, avec \
 seulement quelques fonctionnalités."""
 
-import re
 import random
 
 def convertit_coup(coup):
@@ -17,15 +16,16 @@ def convertit_coup(coup):
     b, d = int(b), int(d)
     b, d = 8 - b, 8 - d
 
-    a, c = a.lower(), c.lower()
     a, c = ord(a) - 97, ord(c) - 97
     return ((b, a), (d, c))
 
 def coup_valide(plateau, coup):
-    """Retourne True si le coup demandé est valide, False sinon."""
+    """Retourne True si le coup demandé est valide, False sinon.
+    Incomplet."""
     # Vérifie que le coup proposé respecte le format convenu
-    pattern = re.compile("[a-h][1-8][a-h][1-8]")
-    if re.fullmatch(pattern, coup.lower()) is None:
+    if len(coup) != 4:
+        return False
+    if not (coup[1].isdigit() and coup[3].isdigit() and coup[0].islower() and coup[2].islower()):
         return False
 
     # On peut donc convertir sans souci
@@ -35,9 +35,13 @@ def coup_valide(plateau, coup):
     if coup[0] == coup[1]:
         return False
 
+    # Vérifie que la case d'arrivée ne soit pas une pièce de même couleur que la pièce qui bouge
+    if (plateau[coup[0][0]][coup[0][1]].isupper() and plateau[coup[1][0]][coup[1][1]].isupper()) or \
+    (plateau[coup[0][0]][coup[0][1]].islower() and plateau[coup[1][0]][coup[1][1]].islower()):
+        return False
+
     # Vérifie que la case d'arrivée est atteignable par la pièce
     return coup[1] in DEPLACEMENTS[plateau[coup[0][0]][coup[0][1]]](plateau, coup[0])
-
 
 def jouer_coup(plateau, coup):
     """Joue le coup demandé sur l'échiquier."""
@@ -69,33 +73,76 @@ def tour(plateau, pos):
     """Renvoie la liste des déplacements possibles pour une tour."""
     deplacements = []
     ligne, colonne = pos
-
     # Cases sur la même ligne que la tour
     for i in range(8):
         deplacements.append((ligne, i))
     # Cases sur la même colonne que la tour
     for i in range(8):
         deplacements.append((i, colonne))
-
     return deplacements
 
 def cavalier(plateau, pos):
     """Renvoie la liste des déplacements possibles pour un cavalier."""
     a, b = pos
-    deplacements =[(a + 2, b + 1), (a + 2, b - 1), (a - 2, b + 1), (a - 2, b - 1), (a + 1, b + 2), (a - 1, b + 2), (a + 1, b - 2), (a - 1,  b - 2)]
-    return deplacements
+    return [
+        (a + 2, b + 1),
+        (a + 2, b - 1),
+        (a - 2, b + 1),
+        (a - 2, b - 1),
+        (a + 1, b + 2),
+        (a - 1, b + 2),
+        (a + 1, b - 2),
+        (a - 1,  b - 2)
+    ]
 
 def fou(plateau, pos):
     """Renvoie la liste des déplacements possibles pour un fou."""
     a, b = pos
-    deplacements = [(a + 1, b + 1), (a + 2, b + 2), (a + 3, b + 3), (a + 4, b + 4), (a + 5, b + 5), (a + 6, b + 6), (a + 7, b + 7), (a - 1, b - 1), (a - 2, b - 2), (a - 3, b - 3), (a - 4, b - 4), (a - 5, b - 5), (a - 6, b - 6), (a - 7, b - 7), (a - 1, b + 1), (a - 2, b + 2), (a - 3, b + 3), (a - 4, b + 4), (a - 5, b + 5), (a - 6, b + 6), (a - 7, b + 7), (a + 1, b - 1), (a + 2, b - 2), (a + 3, b - 3), (a + 4, b - 4), (a + 5, b - 5), (a + 6, b - 6), (a + 7, b - 7) ]
-    return deplacements
+    return [
+        (a + 1, b + 1),
+        (a + 2, b + 2),
+        (a + 3, b + 3), 
+        (a + 4, b + 4), 
+        (a + 5, b + 5), 
+        (a + 6, b + 6), 
+        (a + 7, b + 7), 
+        (a - 1, b - 1), 
+        (a - 2, b - 2), 
+        (a - 3, b - 3), 
+        (a - 4, b - 4), 
+        (a - 5, b - 5), 
+        (a - 6, b - 6), 
+        (a - 7, b - 7), 
+        (a - 1, b + 1), 
+        (a - 2, b + 2), 
+        (a - 3, b + 3), 
+        (a - 4, b + 4), 
+        (a - 5, b + 5), 
+        (a - 6, b + 6), 
+        (a - 7, b + 7), 
+        (a + 1, b - 1), 
+        (a + 2, b - 2), 
+        (a + 3, b - 3), 
+        (a + 4, b - 4), 
+        (a + 5, b - 5), 
+        (a + 6, b - 6), 
+        (a + 7, b - 7) 
+    ]
+
 
 def roi(plateau, pos):
     """Renvoie la liste des déplacements possibles pour un roi."""
     a, b = pos
-    deplacements = [(a + 1, b), (a - 1, b), (a, b + 1), (a, b - 1), (a + 1, b + 1), (a + 1, b - 1), ( a - 1, b - 1), ( a - 1 , b + 1)]
-    return deplacements
+    return [
+        (a + 1, b),
+        (a - 1, b),
+        (a, b + 1),
+        (a, b - 1),
+        (a + 1, b + 1),
+        (a + 1, b - 1),
+        (a - 1, b - 1),
+        (a - 1 , b + 1)
+    ]
 
 def dame(plateau, pos):
     """Renvoie la liste des déplacements possibles pour une dame."""
@@ -133,13 +180,13 @@ def demo():
 
     # pos de départ.
     plateau = [
-        ['R', 'N', 'B', 'Q', 'K', 'B', 'K', 'R'], 
-        ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'], 
-        ['.', '.', '.', '.', '.', '.', '.', '.'], 
-        ['.', '.', '.', '.', '.', '.', '.', '.'], 
-        ['.', '.', '.', '.', '.', '.', '.', '.'], 
-        ['.', '.', '.', '.', '.', '.', '.', '.'], 
-        ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'], 
+        ['R', 'N', 'B', 'Q', 'K', 'B', 'K', 'R'],
+        ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
+        ['.', '.', '.', '.', '.', '.', '.', '.'],
+        ['.', '.', '.', '.', '.', '.', '.', '.'],
+        ['.', '.', '.', '.', '.', '.', '.', '.'],
+        ['.', '.', '.', '.', '.', '.', '.', '.'],
+        ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],
         ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r']
     ]
 
@@ -151,7 +198,7 @@ def demo():
 
         coup = ""
         while not coup_valide(plateau, coup):
-            coup = input("Trait aux {} : ".format(couleur))
+            coup = input("Trait aux {} : ".format(couleur)).lower()
 
         coup = convertit_coup(coup)
         plateau = jouer_coup(plateau, coup)
