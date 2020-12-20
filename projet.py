@@ -95,6 +95,8 @@ def fou(plateau, pos):
 
 def roi(plateau, pos):
     """Renvoie la liste des déplacements possibles pour un roi."""
+    a, b = pos
+    deplacements = [(a + 1, b), (a - 1, b), (a, b + 1), (a, b - 1), (a + 1, b + 1), (a + 1, b - 1), ( a - 1, b - 1), ( a - 1 , b + 1)]
     return deplacements
 
 def dame(plateau, pos):
