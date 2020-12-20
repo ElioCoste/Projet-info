@@ -63,54 +63,6 @@ def afficher_plateau(plateau, trait):
 
 def pion(plateau, pos):
     """Donne la liste des coups valides pour un pion donné."""
-    """deplacements = []
-    colonne, ligne = pos
-    piece = plateau[ligne][colonne]
-
-    if piece.isupper(): # Regarde dans quel camp est le pion
-        ligne_devant_pion = plateau[pos[1] + 1]
-        Deux_ligne_devant_pion = plateau[pos[1] + 2]
-
-        if plateau[ligne-1][colonne] == '.': # Vérifie si le pion peut avancer d'une case
-            deplacements.append((ligne-1, colonne))
-            if Deux_ligne_devant_pion[colonne] == '.' and pos[1] == 1: #de deux cases
-                deplacements.append((colonne, pos[1] + 2))
-
-        if Ligne_devant_pion[colonne - 1].isupper(): #vérifie si le pion peut prendre en diago
-            deplacements.append((colonne - 1, pos[1] + 1))
-        if Ligne_devant_pion[colonne + 1].isupper():
-            deplacements.append((colonne + 1, pos[1] + 1))
-
-        if Ligne_devant_pion[colonne - 1] == '.' and ligne[colonne - 1] == 'p': # Vérifie si le pion peut prendre en passant(incomplet et faux)
-            deplacements.append((colonne - 1, pos[1] + 1))
-        if Ligne_devant_pion[colonne + 1] == '.' and ligne[colonne - 1] == 'p':
-            deplacements.append((colonne + 1, pos[1] + 1))
-
-    else: #pour l'autre camp
-        amis = ['r', 'n', 'b', 'q', 'k', 'p']
-        autre = 'P'
-
-        Ligne_devant_pion = plateau[pos[1] - 1]
-        Deux_ligne_devant_pion = plateau[pos[1] - 2]
-
-        if ligne != 0:
-
-            if Ligne_devant_pion[colonne] == '.':
-                deplacements.append((colonne, pos[1] - 1))
-                if Deux_ligne_devant_pion[colonne] == '.' and pos[1] == 6:
-                    deplacements.append((colonne, pos[1] - 2))
-
-            if Ligne_devant_pion[colonne - 1] not in amis and Ligne_devant_pion[colonne - 1] != '.':
-                deplacements.append((colonne - 1, pos[1] - 1))
-            if Ligne_devant_pion[colonne + 1] not in amis and Ligne_devant_pion[colonne + 1] != '.':
-                deplacements.append((colonne + 1, pos[1] - 1))
-
-            if Ligne_devant_pion[colonne - 1] == '.' and ligne[colonne - 1] == autre:
-                deplacements.append((colonne - 1, pos[1] - 1))
-            if Ligne_devant_pion[colonne + 1] == '.' and ligne[colonne + 1] == autre:
-                deplacements.append((colonne + 1, pos[1] - 1))
-
-    return deplacements"""
     return [(4, 4)]
 
 def tour(plateau, pos):
@@ -136,7 +88,7 @@ def cavalier(plateau, pos):
 def fou(plateau, pos):
     """Renvoie la liste des déplacements possibles pour un fou."""
     a, b = pos
-    deplacements = [(a + 1, b + 1), (a + 2, b + 2), (a + 3, b + 3), (a + 4, b + 4), (a + 5, b + 5), (a + 6, b + 6), (a + 7, b + 7)]
+    deplacements = [(a + 1, b + 1), (a + 2, b + 2), (a + 3, b + 3), (a + 4, b + 4), (a + 5, b + 5), (a + 6, b + 6), (a + 7, b + 7), (a - 1, b - 1), (a - 2, b - 2), (a - 3, b - 3), (a - 4, b - 4), (a - 5, b - 5), (a - 6, b - 6), (a - 7, b - 7), (a - 1, b + 1), (a - 2, b + 2), (a - 3, b + 3), (a - 4, b + 4), (a - 5, b + 5), (a - 6, b + 6), (a - 7, b + 7), (a + 1, b - 1), (a + 2, b - 2), (a + 3, b - 3), (a + 4, b - 4), (a + 5, b - 5), (a + 6, b - 6), (a + 7, b - 7) ]
     return deplacements
 
 def roi(plateau, pos):
