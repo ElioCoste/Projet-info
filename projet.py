@@ -1,5 +1,5 @@
 #:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-# COSTE Elio, COURTOIS Thibaut, DENIEL Théo, NAIME Mathieu
+# COSTE Elio, COURTOIS Thibault, DENIEL Théo, NAIME Mathieu
 # Tuesday, 15 December 2020 
 # Informatique - projet 
 #:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -9,6 +9,7 @@ seulement quelques fonctionnalités."""
 
 import random
 
+
 def convertit_coup(coup):
     """Convertit la notation algébrique en coordonnées utilisables."""
     coordonnees = ((), ())
@@ -16,8 +17,17 @@ def convertit_coup(coup):
 
 def coup_valide(plateau, coup):
     """Retourne True si le coup demandé est valide, False sinon."""
-    est_valide = True
-    return est_valide
+
+    coup = convertit_coup(coup)
+
+    # Vérifie que les cases sont bien sur l'échiquier
+    if 0 > coup[0][0] or 0 > coup[0][1] or 7 < coup[0][0] or 7 < coup[0][1]:
+        return False
+    if 0 > coup[1][0] or 0 > coup[1][1] or 7 < coup[1][0] or 7 < coup[1][1]:
+        return False
+
+    # Vérifie que la case d'arrivée est atteignable par la pièce
+    return DEPLACEMENTS[plateau[coup[0][0]][coup[0][1]]()
 
 def jouer_coup(plateau, coup):
     """Joue le coup demandé sur l'échiquier."""
@@ -32,7 +42,7 @@ def afficher_plateau(plateau, trait):
     # Affichage de l'échiquier
     for i in plateau:
         for j in i:
-            print(j, end='')
+            print(PIECES[j], end='')
         print()
     
 
@@ -56,9 +66,11 @@ def demo():
     while running:
         trait = 0 if trait == 1 else 1
         couleur = "Noirs" if trait else "Blancs"
+
         coup = ((0, 0), (0, 0))
         while not coup_valide(plateau, coup):
             coup = convertit_coup(input("Trait aux {}".format(couleur)))
+
         jouer_coup(plateau, coup)
 
 
