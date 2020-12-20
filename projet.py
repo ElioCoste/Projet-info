@@ -1,7 +1,7 @@
 #:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 # COSTE Elio, COURTOIS Thibault, DENIEL Théo, NAIME Mathieu
-# Tuesday, 15 December 2020 
-# Informatique - projet 
+# Tuesday, 15 December 2020
+# Informatique - projet
 #:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 """Ce projet consiste en une implémentation simpliste d'un jeu d'échecs, avec \
@@ -21,13 +21,14 @@ def coup_valide(plateau, coup):
     coup = convertit_coup(coup)
 
     # Vérifie que les cases sont bien sur l'échiquier
-    if 0 > coup[0][0] or 0 > coup[0][1] or 7 < coup[0][0] or 7 < coup[0][1]:
+    if coup[0][0] < 0 or coup[0][1] > 7 or coup[0][0] < 0 or coup[0][1] > 7:
         return False
-    if 0 > coup[1][0] or 0 > coup[1][1] or 7 < coup[1][0] or 7 < coup[1][1]:
+    if coup[1][0] < 0 or coup[1][1] > 7 or coup[1][0] < 0 or coup[1][1] > 7:
         return False
 
     # Vérifie que la case d'arrivée est atteignable par la pièce
     return coup[1] in DEPLACEMENTS[plateau[coup[0][0]][coup[0][1]]](plateau, coup[0])
+
 
 def jouer_coup(plateau, coup):
     """Joue le coup demandé sur l'échiquier."""
@@ -74,17 +75,17 @@ def dame(plateau, pos):
 
 # Dictionnaire de conversion caractères spéciaux
 PIECES = {
-    "k": '♔', 
-    "q": '♕', 
-    "r": '♖', 
-    "b": '♗', 
-    "n": '♘', 
-    "p": '♙', 
-    "K": '♚', 
-    "Q": '♛', 
-    "R": '♜', 
-    "B": '♝', 
-    "N": '♞', 
+    "k": '♔',
+    "q": '♕',
+    "r": '♖',
+    "b": '♗',
+    "n": '♘',
+    "p": '♙',
+    "K": '♚',
+    "Q": '♛',
+    "R": '♜',
+    "B": '♝',
+    "N": '♞',
     "P": '♟'
 }
 
