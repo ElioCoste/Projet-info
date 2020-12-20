@@ -7,24 +7,33 @@
 """Ce projet consiste en une implémentation simpliste d'un jeu d'échecs, avec \
 seulement quelques fonctionnalités."""
 
+import re
 import random
-
 
 def convertit_coup(coup):
     """Convertit la notation algébrique en coordonnées utilisables."""
-    coordonnees = ((), ())
-    return coordonnees
+    a, b, c, d = coup
+
+    b, d = int(b), int(d)
+    b, d = 8 - b, 8 - d
+
+    a, c = a.lower(), c.lower()
+    a, c = ord(a) - 97, ord(c) - 97
+    return ((b, a), (d, c))
 
 def coup_valide(plateau, coup):
     """Retourne True si le coup demandé est valide, False sinon."""
+    # Vérifie que la case de départ est différente de la case d'arrivée
+    if coup[0] == coup[1]:
+        return False
 
+    # Vérifie que le coup proposé respecte le format convenu
+    pattern = re.compile("[a-h][1-8][a-h][1-8]")
+    if re.fullmatch(coup.lower(), pattern) is None:
+        return False
+
+    # On peut donc convertir sans souci
     coup = convertit_coup(coup)
-
-    # Vérifie que les cases sont bien sur l'échiquier
-    if coup[0][0] < 0 or coup[0][1] > 7 or coup[0][0] < 0 or coup[0][1] > 7:
-        return False
-    if coup[1][0] < 0 or coup[1][1] > 7 or coup[1][0] < 0 or coup[1][1] > 7:
-        return False
 
     # Vérifie que la case d'arrivée est atteignable par la pièce
     return coup[1] in DEPLACEMENTS[plateau[coup[0][0]][coup[0][1]]](plateau, coup[0])
