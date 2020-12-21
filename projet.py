@@ -25,7 +25,8 @@ def coup_valide(plateau, coup, trait):
     # Vérifie que le coup proposé respecte le format convenu
     if len(coup) != 4:
         return False
-    if not (coup[1].isdigit() and coup[3].isdigit() and coup[0].islower() and coup[2].islower()):
+    if not (coup[1].isdigit() and coup[3].isdigit() and \
+        coup[0].islower() and coup[2].islower()):
         return False
 
     if not (0 < int(coup[1]) <= 8 and 0 < int(coup[3]) <= 8):
@@ -43,9 +44,9 @@ def coup_valide(plateau, coup, trait):
     if coup[0] == coup[1]:
         return False
 
-    # Vérifie que la case d'arrivée ne soit pas une pièce de même couleur que la pièce qui bouge
-    if (piece.isupper() and plateau[coup[1][0]][coup[1][1]].isupper()) or \
-    (piece.islower() and plateau[coup[1][0]][coup[1][1]].islower()):
+    # Vérifie que la case d'arrivée ne soit pas une pièce de même couleur
+    # que la pièce qui bouge
+    if meme_couleur(piece, plateau[coup[1][0]][coup[1][1]]):
         return False
 
     # Vérifie que la case d'arrivée est atteignable par la pièce
@@ -73,6 +74,11 @@ def afficher_plateau(plateau, trait):
             print(PIECES[j], end=' ')
         print()
     print('-'*16)
+
+def meme_couleur(piece1, piece2):
+    """Renvoie True si les deux pièces sont de la même couleur, False sinon."""
+    return (piece1.isupper() and piece2.isupper()) or \
+        (piece1.islower() and piece2.islower())
 
 def echec(plateau, trait):
     """Renvoie True si le roi qui a le trait est en échec, False sinon.
@@ -136,12 +142,35 @@ def tour(plateau, pos):
     Incomplet"""
     deplacements = []
     ligne, colonne = pos
-    # Cases sur la même ligne que la tour
-    for i in range(8):
-        deplacements.append((ligne, i))
+    piece = plateau[ligne][colonne]
     # Cases sur la même colonne que la tour
-    for i in range(8):
+    i = ligne - 1
+    while i >= 0 and plateau[i][colonne] == '.':
         deplacements.append((i, colonne))
+        i -= 1
+    if i >= 0 and not meme_couleur(plateau[i][colonne], piece):
+        deplacements.append((i, colonne))
+    i = ligne + 1
+    while i <= 7 and plateau[i][colonne] == '.':
+        deplacements.append((i, colonne))
+        i += 1
+    if i <= 7 and not meme_couleur(plateau[i][colonne], piece):
+        deplacements.append((i, colonne))
+
+    # Cases sur la même ligne que la tour
+    i = colonne - 1
+    while i >= 0 and plateau[ligne][i] == '.':
+        deplacements.append((ligne, i))
+        i -= 1
+    if i >= 0 and not meme_couleur(plateau[i][colonne], piece):
+        deplacements.append((ligne, i))
+    i = colonne + 1
+    while i <= 7 and plateau[ligne][i] == '.':
+        deplacements.append((ligne, i))
+        i += 1
+    if i <= 7 and not meme_couleur(plateau[i][colonne], piece):
+        deplacements.append((ligne, i))
+
     return deplacements
 
 def cavalier(plateau, pos):
@@ -227,8 +256,7 @@ def roi(plateau, pos):
         # Vérifie que la case d'arrivée est bien sur l'échiquier et que la 
         # case d'arrivée ne contient pas une pièce de même couleur que le roi
         if 0 <= i <= 7 and 0 <= j <= 7 and \
-            not (plateau[i][j].islower() and plateau[a][b].islower()) and \
-            not (plateau[i][j].isupper() and plateau[a][b].isupper()):
+            not meme_couleur(plateau[i][j], plateau[a][b]):
             deplacements.append((i, j))
     return deplacements
 
