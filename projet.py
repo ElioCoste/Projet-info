@@ -19,7 +19,7 @@ def convertit_coup(coup):
     a, c = ord(a) - 97, ord(c) - 97
     return ((b, a), (d, c))
 
-def coup_valide(plateau, coup):
+def coup_valide(plateau, coup, trait):
     """Retourne True si le coup demandé est valide, False sinon.
     Incomplet."""
     # Vérifie que le coup proposé respecte le format convenu
@@ -31,12 +31,18 @@ def coup_valide(plateau, coup):
     # On peut donc convertir sans souci
     coup = convertit_coup(coup)
     piece = plateau[coup[0][0]][coup[0][1]]
+
+    # Vérifie que la case indiquée comporte bien une pièce de la bonne couleur
+    if piece.isupper() != trait or piece == ".":
+        return False
+
     # Vérifie que la case de départ est différente de la case d'arrivée
     if coup[0] == coup[1]:
         return False
 
     # Vérifie que la case d'arrivée ne soit pas une pièce de même couleur que la pièce qui bouge
-    if piece.isupper() == plateau[coup[1][0]][coup[1][1]].isupper():
+    if (piece.isupper() and plateau[coup[1][0]][coup[1][1]].isupper()) or \
+    (piece.islower() and plateau[coup[1][0]][coup[1][1]].islower()):
         return False
 
     # Vérifie que la case d'arrivée est atteignable par la pièce
@@ -55,7 +61,7 @@ def jouer_coup(plateau, coup):
 def afficher_plateau(plateau, trait):
     """Affiche l'échiquier sous la perspective de la couleur qui a le trait."""
     # Si c'est aux Noirs de jouer, on renverse l'échiquier
-    if not trait:
+    if trait:
         plateau = [i[::-1] for i in plateau][::-1]
     
     # Affichage de l'échiquier
@@ -63,6 +69,11 @@ def afficher_plateau(plateau, trait):
         for j in i:
             print(PIECES[j], end=' ')
         print()
+
+def echec(plateau, trait):
+    """Renvoie True si le roi qui a le trait est en échec, False sinon.
+    Non implémenté."""
+    return False
 
 
 ## Fonctions pour les déplacements possibles des pièces. 
@@ -272,9 +283,27 @@ def demo():
         couleur = "Noirs" if trait else "Blancs"
 
         coup = ""
-        while not coup_valide(plateau, coup):
-            coup = input("Trait aux {} : ".format(couleur)).lower()
+        afficher_plateau(plateau, trait)
+        while not coup_valide(plateau[:], coup, trait):
+            coup = input("Trait aux {}. Entrez votre coup : ".format(couleur)).lower()
 
+        print(coup)
         coup = convertit_coup(coup)
-        plateau = jouer_coup(plateau, coup)
+
+        # piece_promue
+        piece_promue = None
+        if (plateau[coup[0][0]][coup[0][1]] == 'p' and coup[1][0] == 7)\
+            or (plateau[coup[0][0]][coup[0][1]] == 'P' and coup[1][0] == 0):
+            while piece_promue not in ('r', 'n', 'b', 'q'):
+                piece_promue = input("En quelle pièce voulez-vous promouvoir votre pion ? : ").lower()
+
+        plateau = jouer_coup(plateau[::], coup)
+
+        if piece_promue is not None:
+            print('Promotion')
+            if trait:
+                plateau[coup[1][0]][coup[1][1]] = piece_promue.upper()
+            else:
+                plateau[coup[1][0]][coup[1][1]] = piece_promue.lower()
+
         afficher_plateau(plateau, trait)
