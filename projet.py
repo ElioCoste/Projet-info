@@ -245,14 +245,7 @@ DEPLACEMENTS = {
     "q": dame, 
     "r": tour, 
     "b": fou, 
-    "n": cavalier,
-    "P": pion,
-    "K": roi,
-    "Q": dame,
-    "R": tour,
-    "B": fou,
-    "N": cavalier
-        
+    "n": cavalier
 }
 
 
