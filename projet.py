@@ -69,6 +69,7 @@ def afficher_plateau(plateau, trait):
         for j in i:
             print(PIECES[j], end=' ')
         print()
+    print('-'*16)
 
 def echec(plateau, trait):
     """Renvoie True si le roi qui a le trait est en échec, False sinon.
@@ -223,7 +224,8 @@ def roi(plateau, pos):
         # Vérifie que la case d'arrivée est bien sur l'échiquier et que la 
         # case d'arrivée ne contient pas une pièce de même couleur que le roi
         if 0 <= i <= 7 and 0 <= j <= 7 and \
-            not plateau[i][j].islower() == plateau[a][b].islower():
+            not (plateau[i][j].islower() and plateau[a][b].islower()) and \
+            not (plateau[i][j].isupper() and plateau[a][b].isupper()):
             deplacements.append((i, j))
     return deplacements
 
@@ -266,7 +268,7 @@ def demo():
 
     # pos de départ.
     plateau = [
-        ['R', 'N', 'B', 'Q', 'K', 'B', 'K', 'R'],
+        ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'],
         ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
         ['.', '.', '.', '.', '.', '.', '.', '.'],
         ['.', '.', '.', '.', '.', '.', '.', '.'],
@@ -290,10 +292,10 @@ def demo():
         print(coup)
         coup = convertit_coup(coup)
 
-        # piece_promue
+        # Promotion
         piece_promue = None
-        if (plateau[coup[0][0]][coup[0][1]] == 'p' and coup[1][0] == 7)\
-            or (plateau[coup[0][0]][coup[0][1]] == 'P' and coup[1][0] == 0):
+        if (plateau[coup[0][0]][coup[0][1]] == 'p' and coup[1][0] == 0) \
+            or (plateau[coup[0][0]][coup[0][1]] == 'P' and coup[1][0] == 7):
             while piece_promue not in ('r', 'n', 'b', 'q'):
                 piece_promue = input("En quelle pièce voulez-vous promouvoir votre pion ? : ").lower()
 
