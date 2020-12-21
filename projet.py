@@ -28,6 +28,9 @@ def coup_valide(plateau, coup, trait):
     if not (coup[1].isdigit() and coup[3].isdigit() and coup[0].islower() and coup[2].islower()):
         return False
 
+    if not (0 < int(coup[1]) <= 8 and 0 < int(coup[3]) <= 8):
+        return False
+
     # On peut donc convertir sans souci
     coup = convertit_coup(coup)
     piece = plateau[coup[0][0]][coup[0][1]]
