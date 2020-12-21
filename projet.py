@@ -19,7 +19,7 @@ def convertit_coup(coup):
     a, c = ord(a) - 97, ord(c) - 97
     return ((b, a), (d, c))
 
-def coup_valide(plateau, coup, trait):
+def coup_valide(plateau, coup):
     """Retourne True si le coup demandé est valide, False sinon.
     Incomplet."""
     # Vérifie que le coup proposé respecte le format convenu
@@ -35,13 +35,8 @@ def coup_valide(plateau, coup, trait):
     if coup[0] == coup[1]:
         return False
 
-    # Vérifie que la case indiquée comporte bien une pièce de la bonne couleur
-    if piece.isupper() != trait or piece == ".":
-        return False
-
     # Vérifie que la case d'arrivée ne soit pas une pièce de même couleur que la pièce qui bouge
-    if (piece.isupper() and plateau[coup[1][0]][coup[1][1]].isupper()) or \
-    (piece.islower() and plateau[coup[1][0]][coup[1][1]].islower()):
+    if piece.isupper() == plateau[coup[1][0]][coup[1][1]].isupper():
         return False
 
     # Vérifie que la case d'arrivée est atteignable par la pièce
@@ -68,10 +63,6 @@ def afficher_plateau(plateau, trait):
         for j in i:
             print(PIECES[j], end=' ')
         print()
-
-def echec(plateau, trait):
-    """Renvoie True si le roi qui a le trait est en échec, False sinon."""
-    return False
 
 
 ## Fonctions pour les déplacements possibles des pièces. 
@@ -162,8 +153,42 @@ def cavalier(plateau, pos):
 def fou(plateau, pos):
     """Renvoie la liste des déplacements possibles pour un fou.
     Non implémenté."""
-    ligne, colonne = pos
     deplacements = []
+    a, b = pos
+    liste = [
+        (a + 1, b + 1),
+        (a + 2, b + 2),
+        (a + 3, b + 3),
+        (a + 4, b + 4),
+        (a + 5, b + 5),
+        (a + 6, b + 6),
+        (a + 7, b + 7),
+        (a - 1, b - 1),
+        (a - 2, b - 2),
+        (a - 3, b - 3),
+        (a - 4, b - 4),
+        (a - 5, b - 5),
+        (a - 6, b - 6),
+        (a - 7, b - 7),
+        (a - 1, b + 1),
+        (a - 2, b + 2),
+        (a - 3, b + 3),
+        (a - 4, b + 4),
+        (a - 5, b + 5),
+        (a - 6, b + 6),
+        (a - 7, b + 7),
+        (a + 1, b - 1),
+        (a + 2, b - 2),
+        (a + 3, b - 3),
+        (a + 4, b - 4),
+        (a + 5, b - 5),
+        (a + 6, b - 6),
+        (a + 7, b - 7)
+    ]
+    for i, j in liste:
+        # Vérifie que la case d'arrivée est bien sur l'échiquier
+        if 0 <= i <= 7 and 0 <= j <= 7:
+            deplacements.append((i, j))
     return deplacements
 
 def roi(plateau, pos):
@@ -220,14 +245,20 @@ DEPLACEMENTS = {
     "q": dame, 
     "r": tour, 
     "b": fou, 
-    "n": cavalier
+    "n": cavalier,
+    "P": pion,
+    "K": roi,
+    "Q": dame,
+    "R": tour,
+    "B": fou,
+    "N": cavalier
+        
 }
 
 
 def demo():
     """Fonction principale pour lancer le jeu."""
     input("Appuyez sur ENTREE pour commencer une nouvelle partie.")
-    print()
 
     # pos de départ.
     plateau = [
@@ -244,29 +275,13 @@ def demo():
     trait = 1
     running = True
     while running:
-        afficher_plateau(plateau, trait)
         trait = 0 if trait == 1 else 1
         couleur = "Noirs" if trait else "Blancs"
 
         coup = ""
-        while not coup_valide(plateau[:], coup, trait):
-            coup = input("Trait aux {}. Entrez votre coup : ".format(couleur)).lower()
+        while not coup_valide(plateau, coup):
+            coup = input("Trait aux {} : ".format(couleur)).lower()
 
         coup = convertit_coup(coup)
-
-        # piece_promue
-        piece_promue = None
-        if (plateau[coup[0][0]][coup[0][1]] == 'p' and coup[1][0] == 7)\
-            or (plateau[coup[0][0]][coup[0][1]] == 'P' and coup[1][0] == 0):
-            while piece_promue not in ('r', 'n', 'b', 'q'):
-                piece_promue = input("En quelle pièce voulez-vous promouvoir votre pion ? : ").lower()
-
-        plateau = jouer_coup(plateau[::], coup)
-
-        if piece_promue is not None:
-            print('Promotion')
-            if trait:
-                plateau[coup[1][0]][coup[1][1]] = piece_promue.upper()
-            else:
-                plateau[coup[1][0]][coup[1][1]] = piece_promue.lower()
-
+        plateau = jouer_coup(plateau, coup)
+        afficher_plateau(plateau, trait)
