@@ -50,7 +50,6 @@ def coup_valide(plateau, coup, trait):
     # Vérifie que le roi c'est pas en échec
     #return not echec(jouer_coup(plateau, coup), trait)
 
-
 def jouer_coup(plateau, coup):
     """Joue le coup demandé sur l'échiquier."""
     (ligne_depart, colonne_depart), (ligne_arrivee, colonne_arrivee) = coup
@@ -61,7 +60,7 @@ def jouer_coup(plateau, coup):
 def afficher_plateau(plateau, trait):
     """Affiche l'échiquier sous la perspective de la couleur qui a le trait."""
     # Si c'est aux Noirs de jouer, on renverse l'échiquier
-    if trait:
+    if not trait:
         plateau = [i[::-1] for i in plateau][::-1]
     
     # Affichage de l'échiquier
@@ -78,7 +77,8 @@ def echec(plateau, trait):
 ## Fonctions pour les déplacements possibles des pièces. 
 
 def pion(plateau, pos):
-    """Donne la liste des coups valides pour un pion donné."""
+    """Donne la liste des coups valides pour un pion donné.
+    Complet sauf prise en passant."""
     deplacements = []
     ligne, colonne = pos
     piece = plateau[ligne][colonne]
@@ -126,7 +126,8 @@ def pion(plateau, pos):
     return deplacements
 
 def tour(plateau, pos):
-    """Renvoie la liste des déplacements possibles pour une tour."""
+    """Renvoie la liste des déplacements possibles pour une tour.
+    Incomplet"""
     deplacements = []
     ligne, colonne = pos
     # Cases sur la même ligne que la tour
@@ -138,9 +139,11 @@ def tour(plateau, pos):
     return deplacements
 
 def cavalier(plateau, pos):
-    """Renvoie la liste des déplacements possibles pour un cavalier."""
+    """Renvoie la liste des déplacements possibles pour un cavalier.
+    Complet."""
     a, b = pos
-    return [
+    deplacements = []
+    liste = [
         (a + 2, b + 1),
         (a + 2, b - 1),
         (a - 2, b + 1),
@@ -150,24 +153,27 @@ def cavalier(plateau, pos):
         (a + 1, b - 2),
         (a - 1,  b - 2)
     ]
+    for i, j in liste:
+        # Vérifie que la case est sur l'échiquier
+        if 0 <= i <= 7 and 0 <= j <= 7:
+            deplacements.append((i, j))
+    return deplacements
 
 def fou(plateau, pos):
-    """Renvoie la liste des déplacements possibles pour un fou."""
-    a, b = pos
-    return [
-        (a + 1, b + 1),
-        (a + 2, b + 2),
-        (a + 3, b + 3),
-        (a + 4, b + 4),
-        (a + 5, b + 5),
-        (a + 6, b + 6),
-        (a + 7, b + 7)
-    ]
+    """Renvoie la liste des déplacements possibles pour un fou.
+    Non implémenté."""
+    ligne, colonne = pos
+    deplacements = []
+    return deplacements
 
 def roi(plateau, pos):
-    """Renvoie la liste des déplacements possibles pour un roi."""
+    """Renvoie la liste des déplacements possibles pour un roi.
+    Complet."""
     a, b = pos
-    return [
+    deplacements = []
+
+    # Liste des déplacements possibles de manière générale
+    liste = [
         (a + 1, b),
         (a - 1, b),
         (a, b + 1),
@@ -177,28 +183,37 @@ def roi(plateau, pos):
         (a - 1, b - 1),
         (a - 1 , b + 1)
     ]
+    for i, j in liste:
+        # Vérifie que la case d'arrivée est bien sur l'échiquier et que la 
+        # case d'arrivée ne contient pas une pièce de même couleur que le roi
+        if 0 <= i <= 7 and 0 <= j <= 7 and \
+            not plateau[i][j].islower() == plateau[a][b].islower():
+            deplacements.append((i, j))
+    return deplacements
 
 def dame(plateau, pos):
-    """Renvoie la liste des déplacements possibles pour une dame."""
+    """Renvoie la liste des déplacements possibles pour une dame.
+    Dépend des fonctions fou et tour, i.e incomplet."""
     return fou(plateau, pos) + tour(plateau, pos)
 
-# Dictionnaire de conversion caractères spéciaux
+# Dictionnaire de conversion caractères d'affichage
 PIECES = {
-    "k": '♔',
-    "q": '♕',
-    "r": '♖',
-    "b": '♗',
-    "n": '♘',
-    "p": '♙',
-    "K": '♚',
-    "Q": '♛',
-    "R": '♜',
-    "B": '♝',
-    "N": '♞',
-    "P": '♟',
+    "K": '♔',
+    "Q": '♕',
+    "R": '♖',
+    "B": '♗',
+    "N": '♘',
+    "P": '♙',
+    "k": '♚',
+    "q": '♛',
+    "r": '♜',
+    "b": '♝',
+    "n": '♞',
+    "p": '♟',
     ".": " "
 }
 
+# Fonctions donnant les déplacements associés aux pièces
 DEPLACEMENTS = {
     'p': pion,
     "k": roi, 
@@ -210,6 +225,7 @@ DEPLACEMENTS = {
 
 
 def demo():
+    """Fonction principale pour lancer le jeu."""
     input("Appuyez sur ENTREE pour commencer une nouvelle partie.")
     print()
 
