@@ -136,12 +136,68 @@ def tour(plateau, pos):
     Incomplet"""
     deplacements = []
     ligne, colonne = pos
-    # Cases sur la même ligne que la tour
-    for i in range(8):
-        deplacements.append((ligne, i))
-    # Cases sur la même colonne que la tour
-    for i in range(8):
-        deplacements.append((i, colonne))
+
+    # Cas tour blanche
+    if plateau[ligne][colonne].islower():
+
+        # Cases sur la même colone que la tour
+        i = ligne - 1
+        while i >= 0 and plateau[i][colonne] == '.':
+            deplacements.append((i, colonne))
+            i -= 1
+        if i >= 0 and plateau[i][colonne].isupper():
+            deplacements.append((i, colonne))
+        i = ligne + 1
+        while i <= 7 and plateau[i][colonne] == '.':
+            deplacements.append((i, colonne))
+            i += 1
+        if i <= 7 and plateau[i][colonne].isupper():
+            deplacements.append((i, colonne))
+
+        # Cases sur la même ligne que la tour
+        i = colonne - 1
+        while i >= 0 and plateau[ligne][i] == '.':
+            deplacements.append((ligne, i))
+            i -= 1
+        if i >= 0 and plateau[ligne][i].isupper:
+            deplacements.append((ligne, i))
+        i = colonne + 1
+        while i <= 7 and plateau[ligne][i] == '.':
+            deplacements.append((ligne, i))
+            i += 1
+        if i <= 7 and plateau[ligne][i].isupper:
+            deplacements.append((ligne, i))
+    # Cas tour noire
+    else:
+
+        # Cases sur la même colone que la tour
+        i = ligne - 1
+        while i >= 0 and plateau[i][colonne] == '.':
+            deplacements.append((i, colonne))
+            i -= 1
+        if i >= 0 and plateau[i][colonne].islower():
+            deplacements.append((i, colonne))
+        i = ligne + 1
+        while i <= 7 and plateau[i][colonne] == '.':
+            deplacements.append((i, colonne))
+            i += 1
+        if i <= 7 and plateau[i][colonne].islower():
+            deplacements.append((i, colonne))
+
+        # Cases sur la même ligne que la tour
+        i = colonne - 1
+        while i >= 0 and plateau[ligne][i] == '.':
+            deplacements.append((ligne, i))
+            i -= 1
+        if i >= 0 and plateau[ligne][i].islower:
+            deplacements.append((ligne, i))
+        i = colonne + 1
+        while i <= 7 and plateau[ligne][i] == '.':
+            deplacements.append((ligne, i))
+            i += 1
+        if i <= 7 and plateau[ligne][i].islower:
+            deplacements.append((ligne, i))
+
     return deplacements
 
 def cavalier(plateau, pos):
