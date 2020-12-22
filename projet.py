@@ -138,8 +138,7 @@ def pion(plateau, pos):
     return deplacements
 
 def tour(plateau, pos):
-    """Renvoie la liste des déplacements possibles pour une tour.
-    Incomplet"""
+    """Renvoie la liste des déplacements possibles pour une tour."""
     deplacements = []
     ligne, colonne = pos
     piece = plateau[ligne][colonne]
@@ -195,44 +194,51 @@ def cavalier(plateau, pos):
     return deplacements
 
 def fou(plateau, pos):
-    """Renvoie la liste des déplacements possibles pour un fou.
-    Non implémenté."""
+    """Renvoie la liste des déplacements possibles pour un fou."""
     deplacements = []
     a, b = pos
-    liste = [
-        (a + 1, b + 1),
-        (a + 2, b + 2),
-        (a + 3, b + 3),
-        (a + 4, b + 4),
-        (a + 5, b + 5),
-        (a + 6, b + 6),
-        (a + 7, b + 7),
-        (a - 1, b - 1),
-        (a - 2, b - 2),
-        (a - 3, b - 3),
-        (a - 4, b - 4),
-        (a - 5, b - 5),
-        (a - 6, b - 6),
-        (a - 7, b - 7),
-        (a - 1, b + 1),
-        (a - 2, b + 2),
-        (a - 3, b + 3),
-        (a - 4, b + 4),
-        (a - 5, b + 5),
-        (a - 6, b + 6),
-        (a - 7, b + 7),
-        (a + 1, b - 1),
-        (a + 2, b - 2),
-        (a + 3, b - 3),
-        (a + 4, b - 4),
-        (a + 5, b - 5),
-        (a + 6, b - 6),
-        (a + 7, b - 7)
-    ]
-    for i, j in liste:
-        # Vérifie que la case d'arrivée est bien sur l'échiquier
-        if 0 <= i <= 7 and 0 <= j <= 7:
-            deplacements.append((i, j))
+    piece = plateau[a][b]
+
+    #diago sud-ouest
+    i = a - 1
+    j = b + 1
+    while i >= 0 and j <= 7 and plateau[i][j] == '.':
+        deplacements.append((i, j))
+        i -= 1
+        j += 1
+    if i >= 0 and j <= 7 and not meme_couleur(plateau[i][j], piece):
+        deplacements.append((i, j))
+
+    #diago sud-est
+    i = a + 1
+    j = b + 1
+    while i <= 7 and j <= 7 and plateau[i][j] == '.':
+        deplacements.append((i, j))
+        i += 1
+        j += 1
+    if i <= 7 and j <= 7 and not meme_couleur(plateau[i][j], piece):
+        deplacements.append((i, j))
+
+    #diago nord-est
+    i = a + 1
+    j = b - 1
+    while i <= 7 and j >= 0 and plateau[i][j] == '.':
+        deplacements.append((i, j))
+        i += 1
+        j -= 1
+    if i <= 7 and j >= 0 and not meme_couleur(plateau[i][j], piece):
+        deplacements.append((i, j))
+
+    #diago nord-ouest
+    i = a - 1
+    j = b - 1
+    while i >= 0 and j >= 0 and plateau[i][j] == '.':
+        deplacements.append((i, j))
+        i -= 1
+        j -= 1
+    if i >= 0 and j >=0 and not meme_couleur(plateau[i][j], piece):
+        deplacements.append((i, j))
+
     return deplacements
 
 def roi(plateau, pos):
