@@ -7,21 +7,21 @@
 """Ce projet consiste en une implémentation simpliste d'un jeu d'échecs, avec \
 seulement quelques fonctionnalités."""
 
-import random
-
 def convertit_coup(coup):
     """Convertit la notation algébrique en coordonnées utilisables."""
-    a, b, c, d = coup
+    lig1, col1, lig2, col2 = coup
 
-    b, d = int(b), int(d)
-    b, d = 8 - b, 8 - d
+    col1, col2 = int(col1), int(col2)
+    col1, col2 = 8 - col1, 8 - col2
 
-    a, c = ord(a) - 97, ord(c) - 97
-    return ((b, a), (d, c))
+    lig1, lig2 = ord(lig1) - 97, ord(lig2) - 97
+    return ((col1, lig1), (col2, lig2))
 
 def coup_valide(plateau, coup, trait):
-    """Retourne True si le coup demandé est valide, False sinon.
-    Incomplet."""
+    """
+    Retourne True si le coup demandé est valide, False sinon.
+    Incomplet.
+    """
     # Vérifie que le coup proposé respecte le format convenu
     if len(coup) != 4:
         return False
@@ -29,7 +29,8 @@ def coup_valide(plateau, coup, trait):
         coup[0].islower() and coup[2].islower()):
         return False
 
-    if not (0 < int(coup[1]) <= 8 and 0 < int(coup[3]) <= 8):
+    if not (0 < int(coup[1]) <= 8 and 0 < int(coup[3]) <= 8) or \
+        not (0 <= ord(coup[0]) - 97 < 8 and 0 <= ord(coup[2]) - 97 < 8):
         return False
 
     # On peut donc convertir sans souci
@@ -37,11 +38,8 @@ def coup_valide(plateau, coup, trait):
     piece = plateau[coup[0][0]][coup[0][1]]
 
     # Vérifie que la case indiquée comporte bien une pièce de la bonne couleur
-    if piece.isupper() != trait or piece == ".":
-        return False
-
-    # Vérifie que la case de départ est différente de la case d'arrivée
-    if coup[0] == coup[1]:
+    # et que la case de départ est différente de la case d'arrivée
+    if piece.isupper() != trait or piece == "." or coup[0] == coup[1]:
         return False
 
     # Vérifie que la case d'arrivée ne soit pas une pièce de même couleur
@@ -51,8 +49,8 @@ def coup_valide(plateau, coup, trait):
 
     # Vérifie que la case d'arrivée est atteignable par la pièce
     return coup[1] in DEPLACEMENTS[piece.lower()](plateau, coup[0])
-    
-    # Vérifie que le roi c'est pas en échec
+
+    # Vérifie que le roi c'est pas en échec (non implémenté)
     #return not echec(jouer_coup(plateau, coup), trait)
 
 def jouer_coup(plateau, coup):
@@ -67,7 +65,7 @@ def afficher_plateau(plateau, trait):
     # Si c'est aux Noirs de jouer, on renverse l'échiquier
     if trait:
         plateau = [i[::-1] for i in plateau][::-1]
-    
+
     # Affichage de l'échiquier
     for i in plateau:
         for j in i:
@@ -81,16 +79,20 @@ def meme_couleur(piece1, piece2):
         (piece1.islower() and piece2.islower())
 
 def echec(plateau, trait):
-    """Renvoie True si le roi qui a le trait est en échec, False sinon.
-    Non implémenté."""
-    return False
+    """
+    Renvoie True si le roi qui a le trait est en échec, False sinon.
+    Non implémenté.
+    """
+    raise NotImplementedError(plateau, trait)
 
 
-## Fonctions pour les déplacements possibles des pièces. 
+## Fonctions pour les déplacements possibles des pièces.
 
 def pion(plateau, pos):
-    """Donne la liste des coups valides pour un pion donné.
-    Complet sauf prise en passant."""
+    """
+    Donne la liste des coups valides pour un pion donné.
+    Complet sauf prise en passant.
+    """
     deplacements = []
     ligne, colonne = pos
     piece = plateau[ligne][colonne]
@@ -102,14 +104,14 @@ def pion(plateau, pos):
             # Si on est sur la ligne 1, on peut avancer de deux
             if ligne == 1 and plateau[ligne+2][colonne] == '.':
                 deplacements.append((ligne+2, colonne))
-        
+
         # Prise si il y a une pièce adverse
         prise_droite, prise_gauche = True, True
         if colonne == 0:
             prise_gauche = False
         elif colonne == 7:
             prise_droite = False
-        
+
         if prise_droite and plateau[ligne+1][colonne+1].islower():
             deplacements.append((ligne+1, colonne+1))
         if prise_gauche and plateau[ligne+1][colonne-1].islower():
@@ -122,14 +124,14 @@ def pion(plateau, pos):
             # Si on est sur la ligne 6, on peut avancer de deux
             if ligne == 6 and plateau[ligne-2][colonne] == '.':
                 deplacements.append((ligne-2, colonne))
-        
+
         # Prise si il y a une pièce adverse
         prise_droite, prise_gauche = True, True
         if colonne == 0:
             prise_gauche = False
         elif colonne == 7:
             prise_droite = False
-        
+
         if prise_droite and plateau[ligne-1][colonne+1].isupper():
             deplacements.append((ligne-1, colonne+1))
         if prise_gauche and plateau[ligne-1][colonne-1].isupper():
@@ -173,35 +175,36 @@ def tour(plateau, pos):
     return deplacements
 
 def cavalier(plateau, pos):
-    """Renvoie la liste des déplacements possibles pour un cavalier.
-    Complet."""
-    a, b = pos
+    """Renvoie la liste des déplacements possibles pour un cavalier."""
+    lig, col = pos
     deplacements = []
     liste = [
-        (a + 2, b + 1),
-        (a + 2, b - 1),
-        (a - 2, b + 1),
-        (a - 2, b - 1),
-        (a + 1, b + 2),
-        (a - 1, b + 2),
-        (a + 1, b - 2),
-        (a - 1,  b - 2)
+        (lig + 2, col + 1),
+        (lig + 2, col - 1),
+        (lig - 2, col + 1),
+        (lig - 2, col - 1),
+        (lig + 1, col + 2),
+        (lig - 1, col + 2),
+        (lig + 1, col - 2),
+        (lig - 1,  col - 2)
     ]
     for i, j in liste:
         # Vérifie que la case est sur l'échiquier
-        if 0 <= i <= 7 and 0 <= j <= 7:
+        # et qu'elle ne contient pas une pièce aliée
+        if 0 <= i <= 7 and 0 <= j <= 7 and \
+            not meme_couleur(plateau[i][j], plateau[lig][col]):
             deplacements.append((i, j))
     return deplacements
 
 def fou(plateau, pos):
     """Renvoie la liste des déplacements possibles pour un fou."""
     deplacements = []
-    a, b = pos
-    piece = plateau[a][b]
+    lig, col = pos
+    piece = plateau[lig][col]
 
     #diago sud-ouest
-    i = a - 1
-    j = b + 1
+    i = lig - 1
+    j = col + 1
     while i >= 0 and j <= 7 and plateau[i][j] == '.':
         deplacements.append((i, j))
         i -= 1
@@ -210,8 +213,8 @@ def fou(plateau, pos):
         deplacements.append((i, j))
 
     #diago sud-est
-    i = a + 1
-    j = b + 1
+    i = lig + 1
+    j = col + 1
     while i <= 7 and j <= 7 and plateau[i][j] == '.':
         deplacements.append((i, j))
         i += 1
@@ -220,8 +223,8 @@ def fou(plateau, pos):
         deplacements.append((i, j))
 
     #diago nord-est
-    i = a + 1
-    j = b - 1
+    i = lig + 1
+    j = col - 1
     while i <= 7 and j >= 0 and plateau[i][j] == '.':
         deplacements.append((i, j))
         i += 1
@@ -230,8 +233,8 @@ def fou(plateau, pos):
         deplacements.append((i, j))
 
     #diago nord-ouest
-    i = a - 1
-    j = b - 1
+    i = lig - 1
+    j = col - 1
     while i >= 0 and j >= 0 and plateau[i][j] == '.':
         deplacements.append((i, j))
         i -= 1
@@ -242,33 +245,34 @@ def fou(plateau, pos):
     return deplacements
 
 def roi(plateau, pos):
-    """Renvoie la liste des déplacements possibles pour un roi.
-    Complet."""
-    a, b = pos
+    """Renvoie la liste des déplacements possibles pour un roi."""
+    lig, col = pos
     deplacements = []
 
     # Liste des déplacements possibles de manière générale
     liste = [
-        (a + 1, b),
-        (a - 1, b),
-        (a, b + 1),
-        (a, b - 1),
-        (a + 1, b + 1),
-        (a + 1, b - 1),
-        (a - 1, b - 1),
-        (a - 1 , b + 1)
+        (lig + 1, col),
+        (lig - 1, col),
+        (lig, col + 1),
+        (lig, col - 1),
+        (lig + 1, col + 1),
+        (lig + 1, col - 1),
+        (lig - 1, col - 1),
+        (lig - 1 , col + 1)
     ]
     for i, j in liste:
-        # Vérifie que la case d'arrivée est bien sur l'échiquier et que la 
+        # Vérifie que la case d'arrivée est bien sur l'échiquier et que la
         # case d'arrivée ne contient pas une pièce de même couleur que le roi
         if 0 <= i <= 7 and 0 <= j <= 7 and \
-            not meme_couleur(plateau[i][j], plateau[a][b]):
+            not meme_couleur(plateau[i][j], plateau[lig][col]):
             deplacements.append((i, j))
     return deplacements
 
 def dame(plateau, pos):
-    """Renvoie la liste des déplacements possibles pour une dame.
-    Dépend des fonctions fou et tour, i.e incomplet."""
+    """
+    Renvoie la liste des déplacements possibles pour une dame.
+    Dépend des fonctions fou et tour, i.e incomplet.
+    """
     return fou(plateau, pos) + tour(plateau, pos)
 
 # Dictionnaire de conversion caractères d'affichage
@@ -288,13 +292,34 @@ PIECES = {
     ".": " "
 }
 
+# Dictionnaire de conversion inversant les caractères associés aux pièces
+# noires et blanches, suivant si l'on joue sur fond noir ou blanc
+# pour une meilleure visibilité. 
+"""
+PIECES = {
+    "k": '♔',
+    "q": '♕',
+    "r": '♖',
+    "b": '♗',
+    "n": '♘',
+    "p": '♙',
+    "K": '♚',
+    "Q": '♛',
+    "R": '♜',
+    "B": '♝',
+    "N": '♞',
+    "P": '♟',
+    ".": " "
+}
+"""
+
 # Fonctions donnant les déplacements associés aux pièces
 DEPLACEMENTS = {
     'p': pion,
-    "k": roi, 
-    "q": dame, 
-    "r": tour, 
-    "b": fou, 
+    "k": roi,
+    "q": dame,
+    "r": tour,
+    "b": fou,
     "n": cavalier
 }
 
@@ -325,8 +350,6 @@ def demo():
         afficher_plateau(plateau, trait)
         while not coup_valide(plateau[:], coup, trait):
             coup = input("Trait aux {}. Entrez votre coup : ".format(couleur)).lower()
-
-        print(coup)
         coup = convertit_coup(coup)
 
         # Promotion
@@ -334,7 +357,9 @@ def demo():
         if (plateau[coup[0][0]][coup[0][1]] == 'p' and coup[1][0] == 0) \
             or (plateau[coup[0][0]][coup[0][1]] == 'P' and coup[1][0] == 7):
             while piece_promue not in ('r', 'n', 'b', 'q'):
-                piece_promue = input("En quelle pièce voulez-vous promouvoir votre pion ? : ").lower()
+                piece_promue = input(
+                    "En quelle pièce voulez-vous promouvoir votre pion ? : "
+                    ).lower()
 
         plateau = jouer_coup(plateau[::], coup)
 
