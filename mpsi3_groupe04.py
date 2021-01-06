@@ -51,7 +51,7 @@ def coup_valide(plateau, coup, trait):
     return coup[1] in DEPLACEMENTS[piece.lower()](plateau, coup[0])
 
     # Vérifie que le roi c'est pas en échec (non implémenté)
-    #return not echec(jouer_coup(plateau, coup), trait)
+    # return not echec(jouer_coup(plateau, coup), trait)
 
 def jouer_coup(plateau, coup):
     """Joue le coup demandé sur l'échiquier."""
@@ -272,7 +272,6 @@ def roi(plateau, pos):
 def dame(plateau, pos):
     """
     Renvoie la liste des déplacements possibles pour une dame.
-    Dépend des fonctions fou et tour, i.e incomplet.
     """
     return fou(plateau, pos) + tour(plateau, pos)
 
@@ -350,7 +349,8 @@ def demo():
         coup = ""
         afficher_plateau(plateau, trait)
         while not coup_valide(plateau[:], coup, trait):
-            coup = input("Trait aux {}. Entrez votre coup : ".format(couleur)).lower()
+            coup = input(
+                "Trait aux {}. Entrez votre coup : ".format(couleur)).lower()
         coup = convertit_coup(coup)
 
         # Promotion
