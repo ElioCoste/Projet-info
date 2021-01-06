@@ -4,8 +4,8 @@
 # Informatique - projet
 #:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-"""Ce projet consiste en une implémentation simpliste d'un jeu d'échecs, avec \
-seulement quelques fonctionnalités."""
+"""Ce projet consiste en une implémentation simpliste d'un jeu d'échecs, \
+avec roque, prise en passant et échec non implémentés."""
 
 def convertit_coup(coup):
     """Convertit la notation algébrique en coordonnées utilisables."""
@@ -20,7 +20,7 @@ def convertit_coup(coup):
 def coup_valide(plateau, coup, trait):
     """
     Retourne True si le coup demandé est valide, False sinon.
-    Incomplet.
+    Incomplet (prise en passant et roque non implémentés).
     """
     # Vérifie que le coup proposé respecte le format convenu
     if len(coup) != 4:
@@ -56,7 +56,8 @@ def coup_valide(plateau, coup, trait):
 def jouer_coup(plateau, coup):
     """Joue le coup demandé sur l'échiquier."""
     (ligne_depart, colonne_depart), (ligne_arrivee, colonne_arrivee) = coup
-    plateau[ligne_arrivee][colonne_arrivee] = plateau[ligne_depart][colonne_depart]
+    plateau[ligne_arrivee][colonne_arrivee] = \
+        plateau[ligne_depart][colonne_depart]
     plateau[ligne_depart][colonne_depart] = '.'
     return plateau
 
