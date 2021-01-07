@@ -22,6 +22,13 @@ def coup_valide(plateau, coup, trait):
     Retourne True si le coup demandé est valide, False sinon.
     Incomplet (prise en passant et roque non implémentés).
     """
+
+    # Cas du roque
+    if coup == "o-o":
+        return petit_roque(plateau, trait)
+    if coup == "o-o-o":
+        return grand_roque(plateau, trait)
+
     # Vérifie que le coup proposé respecte le format convenu
     if len(coup) != 4:
         return False
@@ -117,6 +124,11 @@ def pion(plateau, pos):
             deplacements.append((ligne+1, colonne+1))
         if prise_gauche and plateau[ligne+1][colonne-1].islower():
             deplacements.append((ligne+1, colonne-1))
+        
+        # Si prise en passant possible
+        if prise_en_passant is not None and \
+            abs(colonne - prise_en_passant[1]) == 1:
+            deplacements.append((prise_en_passant[0]+1, prise_en_passant[1]))
 
     # Cas d'un pion blanc
     else:
@@ -137,6 +149,10 @@ def pion(plateau, pos):
             deplacements.append((ligne-1, colonne+1))
         if prise_gauche and plateau[ligne-1][colonne-1].isupper():
             deplacements.append((ligne-1, colonne-1))
+
+        if prise_en_passant is not None and \
+            abs(colonne - prise_en_passant[1]) == 1:
+            deplacements.append((prise_en_passant[0]-1, prise_en_passant[1]))
 
     return deplacements
 
@@ -275,6 +291,48 @@ def dame(plateau, pos):
     """
     return fou(plateau, pos) + tour(plateau, pos)
 
+def grand_roque(plateau, trait):
+    """Vérifie que le grand roque est possible."""
+    # Cas noir
+    if trait:
+        if not roque_noir[0]:
+            return False
+        if (plateau[0][1], plateau[0][2], plateau[0][3]) != ('.', '.', '.'):
+            return False
+        # Reste à vérifier que le roi ne se déplace pas sur une case 
+        # où il est en échec...
+        return True
+    
+    # Cas Blanc
+    if not roque_noir[0]:
+        return False
+    if (plateau[7][1], plateau[7][2], plateau[7][3]) != ('.', '.', '.'):
+        return False
+    # Reste à vérifier que le roi ne se déplace pas sur une case 
+    # où il est en échec...
+    return True
+
+def petit_roque(plateau, trait):
+    """Vérifie que le petit roque est possible."""
+    # Cas noir
+    if trait:
+        if not roque_noir[1]:
+            return False
+        if (plateau[0][6], plateau[0][5]) != ('.', '.'):
+            return False
+        # Reste à vérifier que le roi ne se déplace pas sur une case 
+        # où il est en échec...
+        return True
+    
+    # Cas Blanc
+    if not roque_blanc[1]:
+        return False
+    if (plateau[7][6], plateau[7][5]) != ('.', '.'):
+        return False
+    # Reste à vérifier que le roi ne se déplace pas sur une case 
+    # où il est en échec...
+    return True
+
 # Dictionnaire de conversion caractères d'affichage
 PIECES = {
     "K": '♔',
@@ -294,7 +352,7 @@ PIECES = {
 
 # Dictionnaire de conversion inversant les caractères associés aux pièces
 # noires et blanches, suivant si l'on joue sur fond noir ou blanc
-# pour une meilleure visibilité. 
+# pour une meilleure visibilité.
 """
 PIECES = {
     "k": '♔',
@@ -340,35 +398,93 @@ def demo():
         ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r']
     ]
 
+    global roque_blanc
+    global roque_noir
+    global prise_en_passant
+
+    # Le roque est possible au départ. Le 1er élément correspond à la 
+    # possibilité de faire grand roque et le second de faire petit roque
+    roque_blanc, roque_noir = [True, True], [True, True]
+    prise_en_passant = None
+
     trait = 1
     running = True
     while running:
-        trait = 0 if trait == 1 else 1
+        trait = 0 if trait else 1
         couleur = "Noirs" if trait else "Blancs"
 
         coup = ""
         afficher_plateau(plateau, trait)
         while not coup_valide(plateau[:], coup, trait):
             coup = input(
-                "Trait aux {}. Entrez votre coup : ".format(couleur)).lower()
-        coup = convertit_coup(coup)
-
-        # Promotion
-        piece_promue = None
-        if (plateau[coup[0][0]][coup[0][1]] == 'p' and coup[1][0] == 0) \
-            or (plateau[coup[0][0]][coup[0][1]] == 'P' and coup[1][0] == 7):
-            while piece_promue not in ('r', 'n', 'b', 'q'):
-                piece_promue = input(
-                    "En quelle pièce voulez-vous promouvoir votre pion ? : "
-                    ).lower()
-
-        plateau = jouer_coup(plateau[::], coup)
-
-        if piece_promue is not None:
-            print('Promotion')
+                "Trait aux {}. Entrez votre coup : ".format(couleur)
+                ).lower()
+        
+        if coup == "o-o":
+            # Petit roque noir
             if trait:
-                plateau[coup[1][0]][coup[1][1]] = piece_promue.upper()
+                plateau[0][7], plateau[0][4] = '.', '.'
+                plateau[0][6], plateau[0][5] = 'R', 'K'
+                roque_noir = (False, False)
+            # Petit roque blanc
             else:
-                plateau[coup[1][0]][coup[1][1]] = piece_promue.lower()
+                plateau[7][7], plateau[7][4] = '.', '.'
+                plateau[7][6], plateau[7][5] = 'r', 'k'
+                roque_blanc = (False, False)
+            
+        elif coup == "o-o-o":
+            # Grand roque noir
+            if trait:
+                plateau[0][0], plateau[0][4] = '.', '.'
+                plateau[0][3], plateau[0][2] = 'R', 'K'
+                roque_noir = (False, False)
+            # Grand roque blanc
+            else:
+                plateau[7][0], plateau[7][4] = '.', '.'
+                plateau[7][3], plateau[7][2] = 'r', 'k'
+                roque_blanc = (False, False)
+        else:
+            coup = convertit_coup(coup)
+            plateau = jouer_coup(plateau[::], coup)
 
-        afficher_plateau(plateau, trait)
+            # Promotion
+            piece_promue = None
+            if (plateau[coup[0][0]][coup[0][1]] == 'p' and coup[1][0] == 0) \
+                or (plateau[coup[0][0]][coup[0][1]] == 'P' and coup[1][0] == 7):
+                while piece_promue not in ('r', 'n', 'b', 'q'):
+                    piece_promue = input(
+                        "En quelle pièce voulez-vous promouvoir votre pion ? : "
+                        ).lower()
+
+            # Si le roi tour bouge, on interdit le roque des deux côtés
+            if plateau[coup[0][0]][coup[0][1]] == "K":
+                roque_noir = [False, False]
+            if plateau[coup[0][0]][coup[0][1]] == "k":
+                roque_blanc = [False, False]
+
+            # Si une tour bouge, on interdit le roque du côté de la 
+            # tour qui a bougé
+            if plateau[coup[0][0]][coup[0][1]] == "r":
+                if coup[0][1] == 0:
+                    roque_blanc[0] = False
+                if coup[0][1] == 7:
+                    roque_blanc[1] = False
+            if plateau[coup[0][0]][coup[0][1]] == "R":
+                if coup[0][1] == 0:
+                    roque_noir[0] = False
+                if coup[0][1] == 7:
+                    roque_noir[1] = False
+
+            # Réinitialise la prise en passant une fois le coup effectué
+            prise_en_passant = None 
+            # Prise en passant
+            if plateau[coup[1][0]][coup[1][1]].lower() == "p"\
+                and abs(coup[1][0] - coup[0][0]) == 2:
+                prise_en_passant = coup[1] # On peut le prendre en passant
+
+            if piece_promue is not None:
+                print('Promotion')
+                if trait:
+                    plateau[coup[1][0]][coup[1][1]] = piece_promue.upper()
+                else:
+                    plateau[coup[1][0]][coup[1][1]] = piece_promue.lower()
