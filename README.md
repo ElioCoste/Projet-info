@@ -3,11 +3,11 @@
 # Comment jouer ?
 
 ## IA ?
-Pour l'instant, on se limite à un jeu uniquement dirigé par l'utilisateur : à chaque coup, le trait est donné à l'autre joueur.
-L'implémentation du jeu seul contre un programme nécessiterait la modification de la boucle principale.  
+Pour l'instant, on se limite à un jeu uniquement dirigé par le joueur (ou les joueurs) : à chaque coup, le trait est donné à l'autre joueur.
+Un mode contre l'ordinateur sera peut-être implémenté un jour (qui sait ?).
 
 ## Jouer un coup
-On utilise une version modifiée de la **notation algébrique complète** pour les coups. Il faut spécifier la case de départ ainsi que la case d'arrivée, (c'est plus simple à implémenter que la notation allégée). Par ex : e2e4 pour avancer le pion e de deux cases.
+Implémentation d'une interface graphique (soon™) pour povoir jouer à la souris.
 
 # Détails techniques
 
