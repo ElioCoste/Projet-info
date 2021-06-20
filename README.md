@@ -30,7 +30,3 @@ Un coup en notation algébrique est converti en un couple de deux couples de coo
 Le format doit donc être de la forme : `((ligne_depart, colonne_depart), (ligne_arrivee, colonne_arrivee))`.
 
 Par exemple : e2e4 donne `((6, 4), (4, 4))`
-
-# Limitations
-
-Le roque, la prise en passant ne sont pas implémentés.

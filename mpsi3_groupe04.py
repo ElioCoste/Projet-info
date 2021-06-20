@@ -483,7 +483,6 @@ def demo():
                 prise_en_passant = coup[1] # On peut le prendre en passant
 
             if piece_promue is not None:
-                print('Promotion')
                 if trait:
                     plateau[coup[1][0]][coup[1][1]] = piece_promue.upper()
                 else:
