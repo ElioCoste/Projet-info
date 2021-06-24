@@ -4,51 +4,25 @@
 # Informatique - projet
 #:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-"""Ce projet consiste en une implémentation simpliste d'un jeu d'échecs, \
-avec roque, prise en passant et échec non implémentés."""
+"""Ce projet consiste en une implémentation simpliste d'un jeu d'échecs, 
+avec échec non implémenté."""
 
-import os
 import sys
 
 import pygame as pg
 from pygame.locals import*
-from PIL import Image
 
-def convertit_coup(coup):
-    """Convertit la notation algébrique en coordonnées utilisables."""
-    lig1, col1, lig2, col2 = coup
-
-    col1, col2 = int(col1), int(col2)
-    col1, col2 = 8 - col1, 8 - col2
-
-    lig1, lig2 = ord(lig1) - 97, ord(lig2) - 97
-    return ((col1, lig1), (col2, lig2))
+def convertit_evenement(event):
+    """Convertit l'événement pygame en coordonnées utilisables."""
+    x, y = event.pos
+    c = (x - TAILLE_SPRITE) // TAILLE_SPRITE + 1
+    return c if c > 0 else 0, y // TAILLE_SPRITE
 
 def coup_valide(plateau, coup, trait):
     """
     Retourne True si le coup demandé est valide, False sinon.
     Incomplet (prise en passant et roque non implémentés).
     """
-
-    # Cas du roque
-    if coup == "o-o":
-        return petit_roque(plateau, trait)
-    if coup == "o-o-o":
-        return grand_roque(plateau, trait)
-
-    # Vérifie que le coup proposé respecte le format convenu
-    if len(coup) != 4:
-        return False
-    if not (coup[1].isdigit() and coup[3].isdigit() and \
-        coup[0].islower() and coup[2].islower()):
-        return False
-
-    if not (0 < int(coup[1]) <= 8 and 0 < int(coup[3]) <= 8) or \
-        not (0 <= ord(coup[0]) - 97 < 8 and 0 <= ord(coup[2]) - 97 < 8):
-        return False
-
-    # On peut donc convertir sans souci
-    coup = convertit_coup(coup)
     piece = plateau[coup[0][0]][coup[0][1]]
 
     # Vérifie que la case indiquée comporte bien une pièce de la bonne couleur
@@ -75,7 +49,7 @@ def jouer_coup(plateau, coup):
     plateau[ligne_depart][colonne_depart] = '.'
     return plateau
 
-def afficher_plateau(plateau, trait, window):
+def afficher_plateau(plateau, window):
     """Affiche l'échiquier sous la perspective de la couleur qui a le trait."""
     # Afichage du fond
     x, y = 0, 0
@@ -91,10 +65,9 @@ def afficher_plateau(plateau, trait, window):
         for col in lig:
             if col != ".":
                 window.blit(IMAGES[col], (x, y))
-            x =+ TAILLE_SPRITE
+            x += TAILLE_SPRITE
         y += TAILLE_SPRITE
         x = 0
-
 
 def meme_couleur(piece1, piece2):
     """Renvoie True si les deux pièces sont de la même couleur, False sinon."""
@@ -306,28 +279,6 @@ def dame(plateau, pos):
     """
     return fou(plateau, pos) + tour(plateau, pos)
 
-def grand_roque(plateau, trait):
-    """Vérifie que le grand roque est possible."""
-    # Cas noir
-    if trait:
-        if not roque_noir[0]:
-            return False
-        if (plateau[0][1], plateau[0][2], plateau[0][3]) != ('.', '.', '.'):
-            return False
-        # Reste à vérifier que le roi ne se déplace pas sur une case 
-        # où il est en échec...
-        return True
-    
-    # Cas Blanc
-    if not roque_noir[0]:
-        return False
-    if (plateau[7][1], plateau[7][2], plateau[7][3]) != ('.', '.', '.'):
-        return False
-    # Reste à vérifier que le roi ne se déplace pas sur une case 
-    # où il est en échec...
-    return True
-
-def petit_roque(plateau, trait):
     """Vérifie que le petit roque est possible."""
     # Cas noir
     if trait:
@@ -365,28 +316,25 @@ PIECES = {
     ".": " "
 }
 
-TAILLE_SPRITE = 130
+TAILLE_SPRITE = 100
 TAILLE_FENETRE = (TAILLE_SPRITE*8, TAILLE_SPRITE*8)
-
-posx = lambda x: ((x - TAILLE_SPRITE) // TAILLE_SPRITE) + 1 if ((x - TAILLE_SPRITE) // TAILLE_SPRITE + 1) > 0 else 0
-posy = lambda y: y // TAILLE_SPRITE
 
 # Chemins des images
 IMAGES = {
     "noir": "noir.png",
     "blanc": "blanc.png",
-    "k": 'roi_n.png',
-    "q": 'dame_n.png',
-    "r": 'tour_n.png',
-    "b": 'fou_n.png',
-    "n": 'caval_n.png',
-    "p": 'pion_n.png',
-    "K": 'roi_b.png',
-    "Q": 'dame_b.png',
-    "R": 'tour_b.png',
-    "B": 'fou_b.png',
-    "N": 'caval_b.png',
-    "P": 'pion_b.png',
+    "K": 'roi_n.png',
+    "Q": 'dame_n.png',
+    "R": 'tour_n.png',
+    "B": 'fou_n.png',
+    "N": 'caval_n.png',
+    "P": 'pion_n.png',
+    "k": 'roi_b.png',
+    "q": 'dame_b.png',
+    "r": 'tour_b.png',
+    "b": 'fou_b.png',
+    "n": 'caval_b.png',
+    "p": 'pion_b.png',
 }
 
 # Fonctions donnant les déplacements associés aux pièces
@@ -432,98 +380,105 @@ def demo():
 
     # Chargement des images pour pygame
     for i in IMAGES:
-        print(i)
         IMAGES[i] = pg.image.load("images/" + IMAGES[i]).convert_alpha()
 
-    afficher_plateau(plateau, 0, window)
+    afficher_plateau(plateau, window)
 
-    trait = 1
+    trait = 0
     running = True
     while running:
         for event in pg.event.get():
+            coup = ""
             if event.type == QUIT:
                 pg.quit()
                 sys.exit(0)
             elif event.type == MOUSEBUTTONDOWN and event.button == 1:
-                pass # Move
+                x, y = convertit_evenement(event)
+                if plateau[y][x].isupper() == trait and plateau[y][x] != '.':
+                    print(x, y, plateau[y][x])
+                    selection = True
+                    while selection:
+                        for event in pg.event.get():
+                            if event.type == QUIT:
+                                pg.quit()
+                                sys.exit(0)
+                            elif event.type == MOUSEBUTTONDOWN and event.button == 1:
+                                x2, y2 = convertit_evenement(event)
+                                coup = ((y, x), (y2, x2))
+                                print(coup)
+                                if coup_valide(plateau, coup, trait):
+                                    # Promotion
+                                    # piece_promue = None
+                                    # if (plateau[coup[0][0]][coup[0][1]] == 'p' and coup[1][0] == 0) \
+                                    #     or (plateau[coup[0][0]][coup[0][1]] == 'P' and coup[1][0] == 7):
+                                    #     while piece_promue not in ('r', 'n', 'b', 'q'):
+                                    #         piece_promue = input(
+                                    #             "En quelle pièce voulez-vous promouvoir votre pion ? : "
+                                    #             ).lower()
 
-        trait = 0 if trait else 1
-        couleur = "Noirs" if trait else "Blancs"
+                                    # Si le roi bouge, on interdit le roque des deux côtés
+                                    if plateau[coup[0][0]][coup[0][1]] == "K":
+                                        roque_noir = [False, False]
+                                        print("roque noir annulé")
+                                    if plateau[coup[0][0]][coup[0][1]] == "k":
+                                        roque_blanc = [False, False]
+                                        print("roque blanc annulé")
 
-        coup = ""
-        while not coup_valide(plateau[:], coup, trait):
-            coup = input(
-                "Trait aux {}. Entrez votre coup : ".format(couleur)
-                ).lower()
-        
-        if coup == "o-o":
-            # Petit roque noir
-            if trait:
-                plateau[0][7], plateau[0][4] = '.', '.'
-                plateau[0][6], plateau[0][5] = 'R', 'K'
-                roque_noir = (False, False)
-            # Petit roque blanc
-            else:
-                plateau[7][7], plateau[7][4] = '.', '.'
-                plateau[7][6], plateau[7][5] = 'r', 'k'
-                roque_blanc = (False, False)
-            
-        elif coup == "o-o-o":
-            # Grand roque noir
-            if trait:
-                plateau[0][0], plateau[0][4] = '.', '.'
-                plateau[0][3], plateau[0][2] = 'R', 'K'
-                roque_noir = (False, False)
-            # Grand roque blanc
-            else:
-                plateau[7][0], plateau[7][4] = '.', '.'
-                plateau[7][3], plateau[7][2] = 'r', 'k'
-                roque_blanc = (False, False)
-        else:
-            coup = convertit_coup(coup)
-            plateau = jouer_coup(plateau[::], coup)
+                                    # Si une tour bouge, on interdit le roque du côté de la 
+                                    # tour qui a bougé
+                                    if plateau[coup[0][0]][coup[0][1]] == "r":
+                                        if coup[0][1] == 0:
+                                            roque_blanc[0] = False
+                                        if coup[0][1] == 7:
+                                            roque_blanc[1] = False
+                                    if plateau[coup[0][0]][coup[0][1]] == "R":
+                                        if coup[0][1] == 0:
+                                            roque_noir[0] = False
+                                        if coup[0][1] == 7:
+                                            roque_noir[1] = False
 
-            # Promotion
-            piece_promue = None
-            if (plateau[coup[0][0]][coup[0][1]] == 'p' and coup[1][0] == 0) \
-                or (plateau[coup[0][0]][coup[0][1]] == 'P' and coup[1][0] == 7):
-                while piece_promue not in ('r', 'n', 'b', 'q'):
-                    piece_promue = input(
-                        "En quelle pièce voulez-vous promouvoir votre pion ? : "
-                        ).lower()
+                                    plateau = jouer_coup(plateau[::], coup)
+                                    trait = 0 if trait else 1
 
-            # Si le roi tour bouge, on interdit le roque des deux côtés
-            if plateau[coup[0][0]][coup[0][1]] == "K":
-                roque_noir = [False, False]
-            if plateau[coup[0][0]][coup[0][1]] == "k":
-                roque_blanc = [False, False]
+                                    # Réinitialise la prise en passant une fois le coup effectué
+                                    prise_en_passant = None 
+                                    # Prise en passant
+                                    if plateau[coup[1][0]][coup[1][1]].lower() == "p"\
+                                        and abs(coup[1][0] - coup[0][0]) == 2:
+                                        prise_en_passant = coup[1] # On peut le prendre en passant
+                                elif coup == ((0, 4), (0, 7)) and trait and roque_noir[1]:
+                                    # Petit roque noir
+                                    plateau[0][7], plateau[0][4] = '.', '.'
+                                    plateau[0][6], plateau[0][5] = 'R', 'K'
+                                    roque_noir = (False, False)
+                                    trait = 0 if trait else 1
+                                    # Petit roque blanc
+                                elif coup == ((7, 4), (7, 7)) and (not trait) and roque_blanc[1]:
+                                    plateau[7][7], plateau[7][4] = '.', '.'
+                                    plateau[7][6], plateau[7][5] = 'r', 'k'
+                                    roque_blanc = (False, False)
+                                    trait = 0 if trait else 1
+                                    
+                                elif coup == ((0, 4), (0, 0)) and trait and roque_noir[0]:
+                                    # Grand roque noir
+                                    plateau[0][0], plateau[0][4] = '.', '.'
+                                    plateau[0][3], plateau[0][2] = 'R', 'K'
+                                    roque_noir = (False, False)
+                                    trait = 0 if trait else 1
+                                    # Grand roque blanc
+                                elif coup == ((7, 4), (7, 0)) and (not trait) and roque_blanc[0]:
+                                    plateau[7][0], plateau[7][4] = '.', '.'
+                                    plateau[7][3], plateau[7][2] = 'r', 'k'
+                                    roque_blanc = (False, False)
+                                    trait = 0 if trait else 1
+                                
+                                selection = False
+                                    # if piece_promue is not None:
+                                    #     if trait:
+                                    #         plateau[coup[1][0]][coup[1][1]] = piece_promue.upper()
+                                    #     else:
+                                    #         plateau[coup[1][0]][coup[1][1]] = piece_promue.lower()        
 
-            # Si une tour bouge, on interdit le roque du côté de la 
-            # tour qui a bougé
-            if plateau[coup[0][0]][coup[0][1]] == "r":
-                if coup[0][1] == 0:
-                    roque_blanc[0] = False
-                if coup[0][1] == 7:
-                    roque_blanc[1] = False
-            if plateau[coup[0][0]][coup[0][1]] == "R":
-                if coup[0][1] == 0:
-                    roque_noir[0] = False
-                if coup[0][1] == 7:
-                    roque_noir[1] = False
-
-            # Réinitialise la prise en passant une fois le coup effectué
-            prise_en_passant = None 
-            # Prise en passant
-            if plateau[coup[1][0]][coup[1][1]].lower() == "p"\
-                and abs(coup[1][0] - coup[0][0]) == 2:
-                prise_en_passant = coup[1] # On peut le prendre en passant
-
-            if piece_promue is not None:
-                if trait:
-                    plateau[coup[1][0]][coup[1][1]] = piece_promue.upper()
-                else:
-                    plateau[coup[1][0]][coup[1][1]] = piece_promue.lower()
-
-        afficher_plateau(plateau, trait, window)
+        afficher_plateau(plateau, window)
         pg.time.Clock().tick(30)
         pg.display.flip()
