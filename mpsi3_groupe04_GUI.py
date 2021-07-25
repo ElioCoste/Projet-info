@@ -12,11 +12,13 @@ import sys
 import pygame as pg
 from pygame.locals import*
 
-def convertit_evenement(event):
+def convertit_evenement(event, trait):
     """Convertit l'événement pygame en coordonnées utilisables."""
     x, y = event.pos
     c = (x - TAILLE_SPRITE) // TAILLE_SPRITE + 1
-    return c if c > 0 else 0, y // TAILLE_SPRITE
+    if not trait:
+        return c if c > 0 else 0, y // TAILLE_SPRITE
+    return 7 - c if 7 - c > 0 else 0, 7 - (y // TAILLE_SPRITE)
 
 def coup_valide(plateau, coup, trait):
     """
@@ -49,9 +51,11 @@ def jouer_coup(plateau, coup):
     plateau[ligne_depart][colonne_depart] = '.'
     return plateau
 
-def afficher_plateau(plateau, window):
+def afficher_plateau(plateau, window, trait):
     """Affiche l'échiquier sous la perspective de la couleur qui a le trait."""
     # Afichage du fond
+    if trait:
+        plateau = [i[::-1] for i in plateau[::-1]]
     x, y = 0, 0
     for lig in range(8):
         for col in range(8):
@@ -168,15 +172,15 @@ def tour(plateau, pos):
     while i >= 0 and plateau[ligne][i] == '.':
         deplacements.append((ligne, i))
         i -= 1
-    if i >= 0 and not meme_couleur(plateau[i][colonne], piece):
+    if i >= 0 and not meme_couleur(plateau[ligne][i], piece):
         deplacements.append((ligne, i))
     i = colonne + 1
     while i <= 7 and plateau[ligne][i] == '.':
         deplacements.append((ligne, i))
         i += 1
-    if i <= 7 and not meme_couleur(plateau[i][colonne], piece):
+    if i <= 7 and not meme_couleur(plateau[ligne][i], piece):
         deplacements.append((ligne, i))
-
+        
     return deplacements
 
 def cavalier(plateau, pos):
@@ -278,26 +282,7 @@ def dame(plateau, pos):
     Renvoie la liste des déplacements possibles pour une dame.
     """
     return fou(plateau, pos) + tour(plateau, pos)
-
-    """Vérifie que le petit roque est possible."""
-    # Cas noir
-    if trait:
-        if not roque_noir[1]:
-            return False
-        if (plateau[0][6], plateau[0][5]) != ('.', '.'):
-            return False
-        # Reste à vérifier que le roi ne se déplace pas sur une case 
-        # où il est en échec...
-        return True
     
-    # Cas Blanc
-    if not roque_blanc[1]:
-        return False
-    if (plateau[7][6], plateau[7][5]) != ('.', '.'):
-        return False
-    # Reste à vérifier que le roi ne se déplace pas sur une case 
-    # où il est en échec...
-    return True
 
 # Dictionnaire de conversion caractères d'affichage
 PIECES = {
@@ -382,7 +367,7 @@ def demo():
     for i in IMAGES:
         IMAGES[i] = pg.image.load("images/" + IMAGES[i]).convert_alpha()
 
-    afficher_plateau(plateau, window)
+    afficher_plateau(plateau, window, 0)
 
     trait = 0
     running = True
@@ -393,7 +378,7 @@ def demo():
                 pg.quit()
                 sys.exit(0)
             elif event.type == MOUSEBUTTONDOWN and event.button == 1:
-                x, y = convertit_evenement(event)
+                x, y = convertit_evenement(event, trait)
                 if plateau[y][x].isupper() == trait and plateau[y][x] != '.':
                     print(x, y, plateau[y][x])
                     selection = True
@@ -403,7 +388,7 @@ def demo():
                                 pg.quit()
                                 sys.exit(0)
                             elif event.type == MOUSEBUTTONDOWN and event.button == 1:
-                                x2, y2 = convertit_evenement(event)
+                                x2, y2 = convertit_evenement(event, trait)
                                 coup = ((y, x), (y2, x2))
                                 print(coup)
                                 if coup_valide(plateau, coup, trait):
@@ -449,27 +434,27 @@ def demo():
                                 elif coup == ((0, 4), (0, 7)) and trait and roque_noir[1]:
                                     # Petit roque noir
                                     plateau[0][7], plateau[0][4] = '.', '.'
-                                    plateau[0][6], plateau[0][5] = 'R', 'K'
-                                    roque_noir = (False, False)
+                                    plateau[0][6], plateau[0][5] = 'K', 'R'
+                                    roque_noir = [False, False]
                                     trait = 0 if trait else 1
                                     # Petit roque blanc
                                 elif coup == ((7, 4), (7, 7)) and (not trait) and roque_blanc[1]:
                                     plateau[7][7], plateau[7][4] = '.', '.'
-                                    plateau[7][6], plateau[7][5] = 'r', 'k'
-                                    roque_blanc = (False, False)
+                                    plateau[7][6], plateau[7][5] = 'k', 'r'
+                                    roque_blanc = [False, False]
                                     trait = 0 if trait else 1
                                     
                                 elif coup == ((0, 4), (0, 0)) and trait and roque_noir[0]:
                                     # Grand roque noir
                                     plateau[0][0], plateau[0][4] = '.', '.'
                                     plateau[0][3], plateau[0][2] = 'R', 'K'
-                                    roque_noir = (False, False)
+                                    roque_noir = [False, False]
                                     trait = 0 if trait else 1
                                     # Grand roque blanc
                                 elif coup == ((7, 4), (7, 0)) and (not trait) and roque_blanc[0]:
                                     plateau[7][0], plateau[7][4] = '.', '.'
                                     plateau[7][3], plateau[7][2] = 'r', 'k'
-                                    roque_blanc = (False, False)
+                                    roque_blanc = [False, False]
                                     trait = 0 if trait else 1
                                 
                                 selection = False
@@ -479,6 +464,6 @@ def demo():
                                     #     else:
                                     #         plateau[coup[1][0]][coup[1][1]] = piece_promue.lower()        
 
-        afficher_plateau(plateau, window)
+        afficher_plateau(plateau, window, trait)
         pg.time.Clock().tick(30)
         pg.display.flip()
